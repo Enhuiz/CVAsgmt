@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CV ASGMT 1 -- Niu Zhe</title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: blanchedalmond;
+        }
+        
+        hr {
+            background-color: black;
+            height: 2px;
+            border: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>CV ASGMT 1</h1>
+    </center>
+
+    <div class="row" id="input-app">
+        <hr>
+        <center>
+            <h1>INPUT</h1>
+        </center>
+        <br>
+        <div class="col-xs-offset-1">
+            <div class="col-xs-4 col-xs-offset-1" v-for="cell in cells">
+                <a class="thumbnail" @click="onAddClicked">
+                    <img v-if="cell.img" :src="cell.img"></img>
+                    <img v-if="!cell.img" src="/img/add.jpg"></img>
+                    <input type="file" @change="onFileChanged($event, cell)" accept="image/* " style="display: none">
+                </a>
+                <center>ID: {{cell.id}}</center>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="operate-app">
+        <hr>
+        <center>
+            <h1>Opeartion</h1>
+        </center>
+        <br>
+
+        <div class="col-xs-offset-4">
+            <h4>Feature Extract Method</h4>
+            <div class="btn-group btn-group-lg " role="group" aria-label="...">
+                <label class="radio-inline"><input type="radio" value="" v-model="extract">None</label>
+                <label class="radio-inline"><input type="radio" value="sift" v-model="extract">SFIT</label>
+                <label class="radio-inline"><input type="radio" value="surf" v-model="extract">SURF</label>
+                <label class="radio-inline"><input type="radio" value="orb" v-model="extract">ORB</label>
+                <label class="radio-inline"><input type="radio" value="ferns" v-model="extract">FERNS</label>
+            </div>
+        </div>
+
+
+        <div class="col-xs-offset-4">
+            <h4>Feature Match Method</h4>
+            <div class="btn-group btn-group-lg " role="group" aria-label="...">
+                <label class="radio-inline"><input type="radio" value="" v-model="match">None</label>
+                <label class="radio-inline"><input type="radio" value="ransac" v-model="match">RANSAC</label>
+                <label class="radio-inline"><input type="radio" value="kdtree" v-model="match">k-d tree</label>
+                <label class="radio-inline"><input type="radio" value="hashing" v-model="match">hashing</label>
+            </div>
+        </div>
+
+        <br>
+
+        <center>
+            <button class="btn btn-primary" @click="submit">Submit</button>
+        </center>
+
+    </div>
+
+
+    <div class="row" id="output-app">
+        <hr>
+        <center>
+            <h1>Output</h1>
+        </center>
+        <div class="row">
+            <div class="">
+                <div v-for="cell in cells ">
+                    <div class="thumbnail">
+                        <img v-if="cell.img" :src="cell.img"></img>
+                        <img v-if="!cell.img" src="" alt="result will be placed here" width="500"></img>
+                    </div>
+                    <p v-if="cell.id">{{cell.id}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="/js/vue.min.js "></script>
+<script src="/js/app.js "></script>
+
+<script>
+    let input_app = get_input_app("#input-app", 2);
+    let output_app = get_output_app("#output-app");
+
+    let operate_app = new Vue({
+        el: "#operate-app",
+        data: {
+            extract: "",
+            match: "",
+        },
+        methods: {
+            submit: function() {
+                let self = this;
+                output_app.clear();
+                output_app.run({
+                    extract: self.extract,
+                    match: self.match,
+                }, input_app.data());
+            }
+        }
+    });
+</script>
+
+</html>
