@@ -50,7 +50,8 @@ void asgmt1(const server::StrParams &insp, const server::ImgParams &inip, server
 
         auto f2d = get_f2d(insp.at("extract"));
 
-        if (f2d == nullptr) return;
+        if (f2d == nullptr)
+            return;
 
         std::vector<cv::KeyPoint> kp0;
         f2d->detect(imgs[0], kp0);
@@ -84,6 +85,7 @@ void asgmt1(const server::StrParams &insp, const server::ImgParams &inip, server
             }
             else
             {
+                cv::drawKeypoints(imgs[0], kp0, outip[keys[0]]);
                 cv::drawKeypoints(imgs[1], kp1, outip[keys[1]]);
             }
         }
