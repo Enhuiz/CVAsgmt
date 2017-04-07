@@ -19,7 +19,6 @@ void echo(const server::StrParams &insp, const server::ImgParams &inip, server::
     }
 };
 
-
 cv::Ptr<cv::Feature2D> get_f2d(std::string method)
 {
     if (method == "sift")
@@ -39,50 +38,55 @@ cv::Ptr<cv::Feature2D> get_f2d(std::string method)
 
 void asgmt1(const server::StrParams &insp, const server::ImgParams &inip, server::StrParams &outsp, server::ImgParams &outip)
 {
-    if (inip.size() == 0)
-        return;
-
-    if (insp.count("extract"))
+    if (inip.size() != 0 && insp.count("extract"))
     {
         std::vector<cv::Mat> imgs;
+        std::vector<std::string> keys;
         for (auto kv : inip)
         {
+            keys.push_back(kv.first);
             imgs.push_back(kv.second);
         }
 
         auto f2d = get_f2d(insp.at("extract"));
-        std::vector<cv::KeyPoint> kp1;
-        f2d->detect(imgs[0], kp1);
+
+        if (f2d == nullptr) return;
+
+        std::vector<cv::KeyPoint> kp0;
+        f2d->detect(imgs[0], kp0);
 
         if (imgs.size() == 1)
         {
-            cv::drawKeypoints(imgs[0], kp1, outip["res"]);
+            cv::drawKeypoints(imgs[0], kp0, outip[keys[0]]);
         }
         else
         {
-            std::vector<cv::KeyPoint> kp2;
-            f2d->detect(imgs[1], kp2);
+            std::vector<cv::KeyPoint> kp1;
+            f2d->detect(imgs[1], kp1);
 
-            cv::Mat d1, d2;
-            f2d->compute(imgs[0], kp1, d1);
-            f2d->compute(imgs[1], kp2, d2);
+            if (insp.count("match"))
+            {
+                cv::Mat d0, d1;
+                f2d->compute(imgs[0], kp0, d0);
+                f2d->compute(imgs[1], kp1, d1);
 
-            cv::BFMatcher matcher;
-            std::vector<cv::DMatch> matches;
-            matcher.match(d1, d2, matches);
+                cv::BFMatcher matcher;
+                std::vector<cv::DMatch> matches;
+                matcher.match(d0, d1, matches);
 
-            std::nth_element(matches.begin(), matches.begin() + 20, matches.end());
-            matches.erase(matches.begin() + 21, matches.end());        
+                std::nth_element(matches.begin(), matches.begin() + 20, matches.end());
+                matches.erase(matches.begin() + 21, matches.end());
 
-            cv::Mat res;
-            cv::drawMatches(imgs[0], kp1, imgs[1], kp2, matches, res);
+                cv::Mat res;
+                cv::drawMatches(imgs[0], kp0, imgs[1], kp1, matches, res);
 
-            outip["res"] = res;
+                outip["res"] = res;
+            }
+            else
+            {
+                cv::drawKeypoints(imgs[1], kp1, outip[keys[1]]);
+            }
         }
-    }
-    else
-    {
-        echo(insp, inip, outsp, outip);
     }
 }
 };

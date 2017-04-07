@@ -54,29 +54,18 @@
         <div class="col-xs-offset-4">
             <h4>Feature Extract Method</h4>
             <div class="btn-group btn-group-lg " role="group" aria-label="...">
-                <label class="radio-inline"><input type="radio" value="" v-model="extract">None</label>
-                <label class="radio-inline"><input type="radio" value="sift" v-model="extract">SFIT</label>
-                <label class="radio-inline"><input type="radio" value="surf" v-model="extract">SURF</label>
-                <label class="radio-inline"><input type="radio" value="orb" v-model="extract">ORB</label>
-                <label class="radio-inline"><input type="radio" value="ferns" v-model="extract">FERNS</label>
-            </div>
-        </div>
-
-
-        <div class="col-xs-offset-4">
-            <h4>Feature Match Method</h4>
-            <div class="btn-group btn-group-lg " role="group" aria-label="...">
-                <label class="radio-inline"><input type="radio" value="" v-model="match">None</label>
-                <label class="radio-inline"><input type="radio" value="ransac" v-model="match">RANSAC</label>
-                <label class="radio-inline"><input type="radio" value="kdtree" v-model="match">k-d tree</label>
-                <label class="radio-inline"><input type="radio" value="hashing" v-model="match">hashing</label>
+                <label class="radio-inline"><input type="radio" value="sift" v-model="method">SFIT</label>
+                <label class="radio-inline"><input type="radio" value="surf" v-model="method">SURF</label>
+                <label class="radio-inline"><input type="radio" value="orb" v-model="method">ORB</label>
+                <label class="radio-inline"><input type="radio" value="ferns" v-model="method">FERNS</label>
             </div>
         </div>
 
         <br>
 
         <center>
-            <button class="btn btn-primary" @click="submit">Submit</button>
+            <button class="btn btn-primary" @click="extract">Extract</button>
+            <button class="btn btn-primary" @click="match">Match</button>
         </center>
 
     </div>
@@ -112,17 +101,35 @@
     let operate_app = new Vue({
         el: "#operate-app",
         data: {
-            extract: "",
-            match: "",
+            method: "sift",
         },
         methods: {
-            submit: function() {
+            extract: function() {
+                let data = input_app.data();
+                if (Object.keys(data).length < 1) {
+                    alert("At least 1 image are needed to extract");
+                    return;
+                }
+
                 let self = this;
                 output_app.clear();
                 output_app.run({
-                    extract: self.extract,
-                    match: self.match,
-                }, input_app.data());
+                    extract: self.method,
+                }, data);
+            },
+            match: function() {
+                let data = input_app.data();
+                if (Object.keys(data).length != 2) {
+                    alert("2 image are needed to match");
+                    return;
+                }
+
+                let self = this;
+                output_app.clear();
+                output_app.run({
+                    extract: self.method,
+                    match: true,
+                }, data);
             }
         }
     });
