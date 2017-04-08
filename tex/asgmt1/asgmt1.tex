@@ -24,7 +24,9 @@
 \usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
-
+\usepackage{graphicx}   
+\usepackage{caption}
+\usepackage{subfigure}
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 
 \usepackage{sectsty} % Allows customizing section commands
@@ -70,32 +72,26 @@
 \maketitle % Print the title
 
 %----------------------------------------------------------------------------------------
-%	PROBLEM 1
+%	Feature extraction algorithm
 %----------------------------------------------------------------------------------------
 
-\section{feature extraction algorithm}
+\section{feature Extraction Algorithm}
 
-\subsection{Scale-invariant feature transform}
+%----------------------------------------------------------------------------------------
+%   SIFT
+%----------------------------------------------------------------------------------------
 
-\paragraph{}
-Scale-invariant feature transform (SIFT) is an algorithm to detects local features in images. 
+\subsection{Scale-invariant Feature Transform}
+
+\paragraph{Introduction}
+Scale-invariant feature transform (SIFT) is an algorithm to detects local features in images, 
+which is both a keypoint detector and keypoint descriptor. 
 It is proposed by David Lowe in 1999, and was patented by University of British Columbia.
-
-\paragraph{}
-SIFT has several advantages: 
-\begin{enumerate}
-\item Locality: features are local, making it robust to occlusion and clutter.
-\item Quantity: even a small objects can generate many features
-\item Efficiency: nearly real-time performance
-\end{enumerate}
-
-\paragraph{}
 The algorithm can be divided into four stages: 
 Scale-space extreme detection, keypoint localization, orientation assignment and keypoint descriptor. 
 
-\subsubsection{Scale-space extreme detection}
-
-The image is first down-sampled and convolved with Gaussian filter.
+\paragraph{Scale-space Extreme Detection}
+An image is first down-sampled and convolved with Gaussian filter.
 $$
 L(x, y, \sigma) = G(x, y, \sigma) * I(x, y)
 $$
@@ -106,71 +102,413 @@ $I$ is the original image,
 $x, y$ is the pixel location, 
 $\sigma$ is the scale parameter, greater the value, greater the blur.
 By using performing Gaussian filter with different scale parameter several times on different down-sampled images, new imaged are generated.
-The images are then divided into different octaves according to the original down-sampled image.
-
-\paragraph{}
-Next, the difference of images in the same octave will be taken, this is called Difference of Gaussian (DoG). 
+These images together with the original ones are then divided into different octaves according to the original down-sampled image.
+The difference of images in the same octave will be taken after this. The difference is called Difference of Gaussian (DoG). 
 Keypoints are then taken as the maxima or minima points of DoG $D(x, y, \sigma)$ that occur at different octave.
-
 $$
 D(x, y, \sigma) = L(x, y, k_i\sigma) - L(x, y, k_{i+1}\sigma)
 $$
 where $k_i$, $k_{i+1}$ is the scale parameter of convolved image $i$.
 
-\subsection{Keypoint Localization}
+\paragraph{Keypoint Localization}
 The extreme points are usually too many, some of which are unstable.
 Keypoint localization need to be performed to reject points that have low contrast or are poorly localized along an edge.
-
 $$
 D(\mathbf{x}) = D + \frac{\partial D }{\partial x}\mathbf{x} + \frac{1}{2}\mathbf{x^T}\frac{\partial ^ 2 D}{\partial \mathbf{x}^2}\mathbf{x}
-\mathbf{x} = (x, y, \sigma)^T
 $$
-minima or maxima is located at 
+where $\mathbf{x} = (x, y, \sigma)^T$.
+Minima or maxima point is located at 
 $$
-\mathbf{x}\hat = -\frac{\partial ^ 2 D^{-1}}{\partial \mathbf{x}^2}\frac{\partial D }{\partial x}
+\hat{\mathbf{x}} = -\frac{\partial ^ 2 D^{-1}}{\partial \mathbf{x}^2}\frac{\partial D }{\partial \mathbf{x}}
 $$
 value of $D(\mathbf{x})$ must be large, $|D(\mathbf{x})| > threshold$.
 
-\begin{align} 
-\begin{split}
-(x+y)^3 	&= (x+y)^2(x+y)\\
-&=(x^2+2xy+y^2)(x+y)\\
-&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-&=x^3+3x^2y+3xy^2+y^3
-\end{split}					
-\end{align}
+\paragraph{Orientation Assignment}
+To generate a keypoint descriptor, each keypoint should be assigned a consistent orientation based on local image gradient directions. 
+That will make the descriptor invariant to image rotation.
+To perform all the computation in a scale-invariant manner, the scale $\sigma$ should be removed first from $L(x, y, \sigma)$.
+Then the gradient magnitude $m(x, y)$ and $\theta(x, y)$ are computed as following:
+$$
+m(x, y) = \sqrt{(L(x+1, y) - L(x-1, y))^2 + (L(x, y+1) - L(x, y-1))^2}
+$$
+$$
+\theta(x, y) = \arctan \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x- 1,y)}
+$$
 
-Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+% \subsubsection{Keypoint descriptor}
+\paragraph{Keypoint Descriptor}
+After the identification of keypoint and orientations assigned to them, a descriptor vector is ready to be calculated. 
+A $16 \times 16$ window is set around the keypoint, which is then broken into sixteen $4 \times 4$ windows. 
+In each $4 \times 4$ window, gradient magnitude and orientation are calculated. 360 degrees are divided into 8 bins, and each bin takes 45 degrees.
+Results are put into the 8 bins, which form an 8-bin histogram.
+There are sixteen $ 4 \times 4 $ sub-windows in the $16 \times 16$ window, which means, after calculation, a $16 \times 8$ dimensional vector will be generated as the feature vector.
+
+%----------------------------------------------------------------------------------------
+%   SURF
+%----------------------------------------------------------------------------------------
+
+\subsection{Speeded Up Robust Features}
+
+\paragraph{Introduction}
+Speeded up robust feature (SURF) is a local feature and descriptor presented by Herbert Bay, et al at 2006. 
+SURF is basically an approximation of SIFT, 
+which is several times faster than SIFT and claimed to be more robust when it comes to different image transformations.
+
+\paragraph{Detector}
+SURF uses square filters as an approximation of Gaussian smoothing, which will be calculated much faster if the integral image $S(x, y)$ is calculated first.
+$$
+S(x, y) = \sum_{i=0}^x \sum_{j=0}^y I(i, j)
+$$
+The detector to find the keypoints is based on Hessian matrix. 
+The determinant of the Hessian matrix $H(\mathbf{p}, \sigma)$ measure the change around a point. 
+$$
+H(\mathbf{p}, \sigma) = 
+\begin{pmatrix}
+L_{xx}(\mathbf{p}, \sigma) & L_{xy}(\mathbf{p}, \sigma) \\ 
+L_{yx}(\mathbf{p}, \sigma) & L_{yy}(\mathbf{p}, \sigma) \\ 
+\end{pmatrix}
+$$
+where $\mathbf{p} = (x, y)$ is a point in the image I, 
+$L_{xx}(\mathbf{p}, \sigma)$ is the convolution of second-order derivative of Gaussian $ \frac{\partial ^2 g(\sigma)}{\partial x^2} $,
+$L_{xy}, L_{yx}, L_{yy}$ are the same.
+Those whose determinant is maximal will be selected as keypoints.
+
+\paragraph{Scale-space Representation}
+Different from SIFT, scale spaces of SURF are created by applying box filters of different size instead of reducing the image size.
+The lowest level of the scale space is obtained from the output of $9 \times 9$ filters. 
+If $s = 1.2$ which means $\sigma = 1.2$, the determinant Hessian matrix can be reduced as 
+$$
+Det(H_{approx}) = D_{xx}D_{yy} - (0.9D_{xy})^2
+$$
+where $D_{xx}$ is $L_{xx}(\mathbf{p}, \sigma)$, $D_{xy}$ and $D_{yy}$ are the same. 
+$0.9$, which is $0.912$ precisely, is calculated according to the $\sigma$ and the size of the filter.
+After the pyramid is constructed, the keypoints can be localized in the $3 \times 3 \times 3$ neighborhoods. 
+
+\paragraph{Descriptor}
+After the localization of the keypoints, the descriptors should be provided. First is to find the orientation of the keypoints. 
+To do this, the Haar wavelet response need to be calculated in the circle area with radius of 6s, centered at the keypoint. 
+Similar with SIFT, 360 degrees are divided into different bins of size 60 degrees, which is called sliding orientation windows instead.
+The horizontal and vertical responses $dx, dy$ are accumulated, with which the magnitude $m_w$ and orientation $\theta$ can be calculated.
+$$
+m_w = \sum_w dx + \sum_w dy
+$$
+$$
+\theta_w = \arctan(\frac{\sum_w dx}{\sum_w dy})
+$$
+$$
+\theta = \theta_w | \max{\{m_w\}}
+$$
+The area is then divided into $4\times4$ sub-areas.
+In each sub-area, the feature vector can be then represented by $\sum dx, \sum|dx|, \sum dy, \sum |dy|$.
+Finally, a $4\times4\times4$ dimensional feature will be extracted from a keypoint.
+
+
+%----------------------------------------------------------------------------------------
+%   ORB
+%----------------------------------------------------------------------------------------
+
+\subsection{Oriented FAST and Rotated BRIEF}
+
+\paragraph{Introduction}
+Oriented FAST and Rotated BRIEF (ORB) is brought up by Ethan Rublee, et al in the paper ORB: An efficient algernative to SIFT or SURF in 2011.
+This algorithm use a improved FAST algorithm which is called Oriented Fast (oFast) to find the keypoint. 
+After this, another improved algorithm, Rotated BRIEF (rBRIEF) is applied to generate the descriptor of keypoints.
+
+\paragraph{oFAST}
+This algorithm start by detecting FAST points in the image, which takes one parameter, the intensity threshold. 
+After the FAST points are detected, Harris conner is applied to measure the cornerness. 
+For a target number N, the top N keypoints will be picked up from the ordered-by-cornerness keypoints.
+To produce multi-scale features, the previous step will be applied to a scale pyramid of the image.
+After this, the orientation of the corner should be calculated.
+The method to calculate orientation is called Intensity Centroid.
+Moments of a path $m_{pq}$ is defined as
+$$
+m_{pq} = \sum_{x, y} x^p y^q I(x, y)
+$$
+with these moments, centroid can be defined as
+$$
+C = \left( \frac{m_{10}} {m_{00} }, \frac{m_{01}} {m_{00}} \right)
+$$
+A vector from corner's center $O$ to the centroid $C$ is $\overrightarrow{OC}$. 
+The orientation of the patch can be calculated:
+$$
+\theta = \arctan(\frac{m_{01}}{m_{10}})
+$$
+
+\paragraph{rBRIEF}
+The BRIEF descriptor is a bit string that describe an image patch, to make it rotation invariant, Steered BRIEF is proposed. 
+This algorithm steer BRIEF according to the orientation of keypoint calculated in previous oFAST.
+To do this, for any feature set at location $(x_i, y_i)$, a $2 \times n$ matrix is defined:
+$$
+S = 
+\begin{pmatrix}
+x_1&\dots&x_n \\
+y_1&\dots&y_n \\
+\end{pmatrix}
+$$
+Then we construct a steered version $S_\theta$ of $S$
+$$
+S_\theta = R_\theta S
+$$
+where 
+$$
+R_\theta = 
+\begin{pmatrix}
+\cos \theta & \sin \theta \\
+-\sin \theta & \cos \theta \\
+\end{pmatrix}
+$$
+Then the rotation invariant feature is obtained.
 
 %------------------------------------------------
 
-\subsection{Heading on level 2 (subsection)}
+%----------------------------------------------------------------------------------------
+%   Matching Algorithm
+%----------------------------------------------------------------------------------------
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. 
-\begin{align}
-A = 
-\begin{bmatrix}
-A_{11} & A_{21} \\
-A_{21} & A_{22}
-\end{bmatrix}
-\end{align}
-Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+\section{Matching Algorithm}
+
+%----------------------------------------------------------------------------------------
+%   RANSAC
+%----------------------------------------------------------------------------------------
+
+\subsection{RANSAC}
+\paragraph{Introduction}
+
+%----------------------------------------------------------------------------------------
+%   k-d tree
+%----------------------------------------------------------------------------------------
+
+\subsection{k-d tree}
+\paragraph{Introduction}
+
+%----------------------------------------------------------------------------------------
+%   hashing
+%----------------------------------------------------------------------------------------
+\subsection{hashing}
+\paragraph{Introduction}
+
+%----------------------------------------------------------------------------------------
+%   hashing
+%----------------------------------------------------------------------------------------
+\subsection{hashing}
+\paragraph{Introduction}
+
+
+%----------------------------------------------------------------------------------------
+%	Result
+%----------------------------------------------------------------------------------------
+\section{Test Result}
+
+\paragraph{Test System}
+A web system developed with boost asio and OpenCV helps to perform this test. 
+This system receives image inputs and parameters from the browser, processes them on the server and then pushes the result back.
+The website for the first assignment looks like figure \ref{fig:website}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/website.png}
+\caption{the website for the first cv assignment}
+\label{fig:website}
+\end{figure}
+
+The keypoint extraction and matching with different algorithm is performed, results are listed below. 
+
+\subsection{Feature Extraction}
+
+%------------------------------------------------
+% object
+%------------------------------------------------
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SIFT]{
+\includegraphics[width=0.4\textwidth]{pic/object1-sift.png}}
+\caption{Object Keypoints Localization by SIFT}
+\label{fig:object1-sift} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SURF]{
+\includegraphics[width=0.4\textwidth]{pic/object1-surf.png}}
+\caption{Object Keypoints Localization by SURF}
+\label{fig:object1-surf} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by ORB]{
+\includegraphics[width=0.4\textwidth]{pic/object1-orb.png}}
+\caption{Object Keypoints Localization by ORB}
+\label{fig:object1-orb} %% label for entire figure
+\end{figure}
+ 
+%------------------------------------------------
+% indoor 
+%------------------------------------------------
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SIFT]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1-sift.png}}
+\caption{Outdoor Keypoints Localization by SIFT}
+\label{fig:indoor1-sift} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SURF]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1-surf.png}}
+\caption{Outdoor Keypoints Localization by SURF}
+\label{fig:indoor1-surf} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by ORB]{
+\includegraphics[width=0.4\textwidth]{pic/indoor1-orb.png}}
+\caption{Outdoor Keypoints Localization by ORB}
+\label{fig:indoor1-orb} %% label for entire figure
+\end{figure}
+ 
+
+%------------------------------------------------
+% outdoor 
+%------------------------------------------------
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SIFT]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1-sift.png}}
+\caption{Indoor Keypoints Localization by SIFT}
+\label{fig:outdoor1-sift} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by SURF]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1-surf.png}}
+\caption{Indoor Keypoints Localization by SURF}
+\label{fig:outdoor1-surf} %% label for entire figure
+\end{figure}
+ 
+
+\begin{figure}[htbp]
+\centering
+\subfigure[Original Picture]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+\hspace{1in}
+\subfigure[Keypoints by ORB]{
+\includegraphics[width=0.4\textwidth]{pic/outdoor1-orb.png}}
+\caption{Indoor Keypoints Localization by ORB}
+\label{fig:outdoor1-orb} %% label for entire figure
+\end{figure}
+ 
+
+%------------------------------------------------
+% feature matching
+%------------------------------------------------
+
+\subsection{Feature Matching}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/object-m-sift.png}
+\caption{Object SIFT Feature Matching}
+\label{fig:object-m-sift}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/object-m-surf.png}
+\caption{Object SURF Feature Matching}
+\label{fig:object-m-surf}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/object-m-orb.png}
+\caption{Object ORB Feature Matching}
+\label{fig:object-m-orb}
+\end{figure}
 
 %------------------------------------------------
 
-\subsubsection{Heading on level 3 (subsubsection)}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/indoor-m-sift.png}
+\caption{Indoor SIFT Feature Matching}
+\label{fig:indoor-m-sift}
+\end{figure}
 
-\lipsum[3] % Dummy text
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/indoor-m-surf.png}
+\caption{Indoor SURF Feature Matching}
+\label{fig:indoor-m-surf}
+\end{figure}
 
-\paragraph{Heading on level 4 (paragraph)}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/indoor-m-orb.png}
+\caption{Indoor ORB Feature Matching}
+\label{fig:indoor-m-orb}
+\end{figure}
 
-\lipsum[6] % Dummy text
 
-%----------------------------------------------------------------------------------------
-%	PROBLEM 2
-%----------------------------------------------------------------------------------------
+%------------------------------------------------
 
-\section{Lists}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/outdoor-m-sift.png}
+\caption{Outdoor SIFT Feature Matching}
+\label{fig:outdoor-m-sift}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/outdoor-m-surf.png}
+\caption{Outdoor SURF Feature Matching}
+\label{fig:outdoor-m-surf}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{pic/outdoor-m-orb.png}
+\caption{Outdoor ORB Feature Matching}
+\label{fig:outdoor-m-orb}
+\end{figure}
+
 
 %------------------------------------------------
 
@@ -199,4 +537,35 @@ Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et 
 
 %----------------------------------------------------------------------------------------
 
+\begin{align} 
+\begin{split}
+(x+y)^3 	&= (x+y)^2(x+y)\\
+&=(x^2+2xy+y^2)(x+y)\\
+&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
+&=x^3+3x^2y+3xy^2+y^3
+\end{split}					
+\end{align}
+
+
+\begin{align}
+A = 
+\begin{bmatrix}
+A_{11} & A_{21} \\
+A_{21} & A_{22}
+\end{bmatrix}
+\end{align}
+
+
+%----------------------------------------------------------------------------------------
+% Reference
+%----------------------------------------------------------------------------------------
+
+\renewcommand\refname{Reference}
+\bibliographystyle{unsrt}
+\begin{thebibliography}{99}
+\bibitem{surf}
+Bay H, Tuytelaars T, Gool L V. SURF: Speeded Up Robust Features[J]. Computer Vision \& Image Understanding, 2006, 110(3):404-417.
+\bibitem{orb}
+Rublee E, Rabaud V, Konolige K, et al. ORB: An efficient alternative to SIFT or SURF[C]// IEEE International Conference on Computer Vision. IEEE, 2011:2564-2571.
+\end{thebibliography}
 \end{document}

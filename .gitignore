@@ -4,3 +4,5 @@
 /tex/*/*.aux
 /tex/*/*.log
 /tex/*/*.pdf
+*.png
+*.jpg
