@@ -28,7 +28,7 @@
 \usepackage{caption}
 \usepackage{subfigure}
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
-
+\usepackage{float}
 \usepackage{sectsty} % Allows customizing section commands
 \allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
 
@@ -302,136 +302,138 @@ A web system developed with boost asio and OpenCV helps to perform this test.
 This system receives image inputs and parameters from the browser, processes them on the server and then pushes the result back.
 The website for the first assignment looks like figure \ref{fig:website}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{pic/website.png}
 \caption{the website for the first cv assignment}
 \label{fig:website}
 \end{figure}
 
-The keypoint extraction and matching with different algorithm is performed, results are listed below. 
+The different keypoint extraction and matching algorithm are performed in this experiment.
+Three kind of images, including object, indoor scene, outdoor scene, are taken in this experiment.
+Following sections only provides several images of indoor scene to avoid tediousness.
+The other experiment results can be found in the appendix.
 
-\subsection{Feature Extraction}
+\subsection{Keypoint Extraction}
+\label{sec:feature-extraction}
 
 %------------------------------------------------
 % object
 %------------------------------------------------
-\subsubsection{Object Feature Extraction}
-
-
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by SIFT]{
-\includegraphics[width=0.4\textwidth]{pic/object1-sift.png}}
-\caption{Object Keypoints Localization by SIFT}
-\label{fig:object1-sift} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by SIFT]{
+% \includegraphics[width=0.4\textwidth]{pic/object1-sift.png}}
+% \caption{Object Keypoints Localization by SIFT}
+% \label{fig:object1-sift} %% label for entire figure
+% \end{figure}
  
 
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by SURF]{
-\includegraphics[width=0.4\textwidth]{pic/object1-surf.png}}
-\caption{Object Keypoints Localization by SURF}
-\label{fig:object1-surf} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by SURF]{
+% \includegraphics[width=0.4\textwidth]{pic/object1-surf.png}}
+% \caption{Object Keypoints Localization by SURF}
+% \label{fig:object1-surf} %% label for entire figure
+% \end{figure}
  
 
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by ORB]{
-\includegraphics[width=0.4\textwidth]{pic/object1-orb.png}}
-\caption{Object Keypoints Localization by ORB}
-\label{fig:object1-orb} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/object1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by ORB]{
+% \includegraphics[width=0.4\textwidth]{pic/object1-orb.png}}
+% \caption{Object Keypoints Localization by ORB}
+% \label{fig:object1-orb} %% label for entire figure
+% \end{figure}
  
 %------------------------------------------------
 % indoor 
 %------------------------------------------------
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \subfigure[Original Picture]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
 \hspace{1in}
 \subfigure[Keypoints by SIFT]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1-sift.png}}
-\caption{Outdoor Keypoints Localization by SIFT}
+\caption{Indoor Keypoints Localization by SIFT}
 \label{fig:indoor1-sift} %% label for entire figure
 \end{figure}
  
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \subfigure[Original Picture]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
 \hspace{1in}
 \subfigure[Keypoints by SURF]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1-surf.png}}
-\caption{Outdoor Keypoints Localization by SURF}
+\caption{Indoor Keypoints Localization by SURF}
 \label{fig:indoor1-surf} %% label for entire figure
 \end{figure}
  
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \subfigure[Original Picture]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1.jpg}}
 \hspace{1in}
 \subfigure[Keypoints by ORB]{
 \includegraphics[width=0.4\textwidth]{pic/indoor1-orb.png}}
-\caption{Outdoor Keypoints Localization by ORB}
+\caption{Indoor Keypoints Localization by ORB}
 \label{fig:indoor1-orb} %% label for entire figure
-\end{figure}
- 
+\end{figure} 
+
+The result above shows that SURF detects the greatest amount of keypoints, and ORB the least.
 
 %------------------------------------------------
 % outdoor 
 %------------------------------------------------
 
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by SIFT]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1-sift.png}}
-\caption{Indoor Keypoints Localization by SIFT}
-\label{fig:outdoor1-sift} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by SIFT]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1-sift.png}}
+% \caption{Indoor Keypoints Localization by SIFT}
+% \label{fig:outdoor1-sift} %% label for entire figure
+% \end{figure}
  
 
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by SURF]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1-surf.png}}
-\caption{Indoor Keypoints Localization by SURF}
-\label{fig:outdoor1-surf} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by SURF]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1-surf.png}}
+% \caption{Indoor Keypoints Localization by SURF}
+% \label{fig:outdoor1-surf} %% label for entire figure
+% \end{figure}
  
 
-\begin{figure}[htbp]
-\centering
-\subfigure[Original Picture]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
-\hspace{1in}
-\subfigure[Keypoints by ORB]{
-\includegraphics[width=0.4\textwidth]{pic/outdoor1-orb.png}}
-\caption{Indoor Keypoints Localization by ORB}
-\label{fig:outdoor1-orb} %% label for entire figure
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfigure[Original Picture]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1.jpg}}
+% \hspace{1in}
+% \subfigure[Keypoints by ORB]{
+% \includegraphics[width=0.4\textwidth]{pic/outdoor1-orb.png}}
+% \caption{Indoor Keypoints Localization by ORB}
+% \label{fig:outdoor1-orb} %% label for entire figure
+% \end{figure}
  
 
 %------------------------------------------------
@@ -439,45 +441,45 @@ The keypoint extraction and matching with different algorithm is performed, resu
 %------------------------------------------------
 
 \subsection{Feature Matching}
+\subsubsection{BF Match}
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/object-m-sift.png}
+% \caption{Object SIFT Feature Matching}
+% \label{fig:object-m-sift}
+% \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{pic/object-m-sift.png}
-\caption{Object SIFT Feature Matching}
-\label{fig:object-m-sift}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/object-m-surf.png}
+% \caption{Object SURF Feature Matching}
+% \label{fig:object-m-surf}
+% \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{pic/object-m-surf.png}
-\caption{Object SURF Feature Matching}
-\label{fig:object-m-surf}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{pic/object-m-orb.png}
-\caption{Object ORB Feature Matching}
-\label{fig:object-m-orb}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/object-m-orb.png}
+% \caption{Object ORB Feature Matching}
+% \label{fig:object-m-orb}
+% \end{figure}
 
 %------------------------------------------------
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{pic/indoor-m-sift.png}
 \caption{Indoor SIFT Feature Matching}
 \label{fig:indoor-m-sift}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{pic/indoor-m-surf.png}
 \caption{Indoor SURF Feature Matching}
 \label{fig:indoor-m-surf}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{pic/indoor-m-orb.png}
 \caption{Indoor ORB Feature Matching}
@@ -485,75 +487,60 @@ The keypoint extraction and matching with different algorithm is performed, resu
 \end{figure}
 
 
-%------------------------------------------------
+% %------------------------------------------------
 
-\begin{figure}[htbp]
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/outdoor-m-sift.png}
+% \caption{Outdoor SIFT Feature Matching}
+% \label{fig:outdoor-m-sift}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/outdoor-m-surf.png}
+% \caption{Outdoor SURF Feature Matching}
+% \label{fig:outdoor-m-surf}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{pic/outdoor-m-orb.png}
+% \caption{Outdoor ORB Feature Matching}
+% \label{fig:outdoor-m-orb}
+% \end{figure}
+
+Three feature extraction methods perform not very well, some Keypoints are matched mistakenly to the irrelevant ones.
+RANSAC can be used here to solve the problem, which helps to build a affine matrix to reject the mistake matches.
+
+\subsubsection{RANSAC Matches}
+
+\begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{pic/outdoor-m-sift.png}
-\caption{Outdoor SIFT Feature Matching}
-\label{fig:outdoor-m-sift}
+\includegraphics[width=\textwidth]{pic/indoor-m-sift-ransac.png}
+\caption{Indoor SIFT Feature Matching}
+\label{fig:indoor-m-sift-ransac}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{pic/outdoor-m-surf.png}
-\caption{Outdoor SURF Feature Matching}
-\label{fig:outdoor-m-surf}
+\includegraphics[width=\textwidth]{pic/indoor-m-surf-ransac.png}
+\caption{Indoor SURF Feature Matching}
+\label{fig:indoor-m-surf-ransac}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{pic/outdoor-m-orb.png}
-\caption{Outdoor ORB Feature Matching}
-\label{fig:outdoor-m-orb}
+\includegraphics[width=\textwidth]{pic/indoor-m-orb-ransac.png}
+\caption{Indoor ORB Feature Matching}
+\label{fig:indoor-m-orb-ransac}
 \end{figure}
 
-
-%------------------------------------------------
-
-\subsection{Example of list (3*itemize)}
-\begin{itemize}
-	\item First item in a list 
-		\begin{itemize}
-		\item First item in a list 
-			\begin{itemize}
-			\item First item in a list 
-			\item Second item in a list 
-			\end{itemize}
-		\item Second item in a list 
-		\end{itemize}
-	\item Second item in a list 
-\end{itemize}
-
-%------------------------------------------------
-
-\subsection{Example of list (enumerate)}
-\begin{enumerate}
-\item First item in a list 
-\item Second item in a list 
-\item Third item in a list
-\end{enumerate}
-
-%----------------------------------------------------------------------------------------
-
-\begin{align} 
-\begin{split}
-(x+y)^3 	&= (x+y)^2(x+y)\\
-&=(x^2+2xy+y^2)(x+y)\\
-&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-&=x^3+3x^2y+3xy^2+y^3
-\end{split}					
-\end{align}
-
-
-\begin{align}
-A = 
-\begin{bmatrix}
-A_{11} & A_{21} \\
-A_{21} & A_{22}
-\end{bmatrix}
-\end{align}
-
+Now, the result become much better. The matches go well except the one whose feature is extracted by the ORB method. 
+According to the section \ref{sec:feature-extraction}, ORB extracts few keypoints, which may cause the mismatching result.
+This shortcoming of ORB also showed on the outdoor results, but when it comes to the object image, ORB turns to have a much better result
+\footnote{The outdoor results and object results can be found in the appendix.}.
+It's obvious that a match masked by a affine matrix will have a much clearer result than those without a mask.
 
 %----------------------------------------------------------------------------------------
 % Reference

@@ -43,5 +43,6 @@
         "utility": "cpp",
         "string": "cpp",
         "algorithm": "cpp"
-    }
+    },
+    "python.linting.pylintEnabled": false
 }

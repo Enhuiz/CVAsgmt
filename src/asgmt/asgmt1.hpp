@@ -78,7 +78,8 @@ void asgmt1(const server::StrParams &insp, const server::ImgParams &inip, server
                 matches.erase(matches.begin() + 21, matches.end());
 
                 cv::Mat res;
-                cv::drawMatches(imgs[0], kp0, imgs[1], kp1, matches, res);
+                cv::drawMatches(imgs[0], kp0, imgs[1], kp1, matches, res, cv::Scalar::all(-1), cv::Scalar::all(-1),
+                                std::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
                 outip["res"] = res;
             }
