@@ -83,7 +83,7 @@
 
 \subsection{Scale-invariant Feature Transform}
 
-\paragraph{Introduction}
+\paragraph{Overview}
 Scale-invariant feature transform (SIFT) is an algorithm to detects local features in images, 
 which is both a keypoint detector and keypoint descriptor. 
 It is proposed by David Lowe in 1999, and was patented by University of British Columbia.
@@ -149,7 +149,7 @@ There are sixteen $ 4 \times 4 $ sub-windows in the $16 \times 16$ window, which
 
 \subsection{Speeded Up Robust Features}
 
-\paragraph{Introduction}
+\paragraph{Overview}
 Speeded up robust feature (SURF) is a local feature and descriptor presented by Herbert Bay, et al at 2006. 
 SURF is basically an approximation of SIFT, 
 which is several times faster than SIFT and claimed to be more robust when it comes to different image transformations.
@@ -209,7 +209,7 @@ Finally, a $4\times4\times4$ dimensional feature will be extracted from a keypoi
 
 \subsection{Oriented FAST and Rotated BRIEF}
 
-\paragraph{Introduction}
+\paragraph{Overview}
 Oriented FAST and Rotated BRIEF (ORB) is brought up by Ethan Rublee, et al in the paper ORB: An efficient algernative to SIFT or SURF in 2011.
 This algorithm use a improved FAST algorithm which is called Oriented Fast (oFast) to find the keypoint. 
 After this, another improved algorithm, Rotated BRIEF (rBRIEF) is applied to generate the descriptor of keypoints.
@@ -229,7 +229,7 @@ with these moments, centroid can be defined as
 $$
 C = \left( \frac{m_{10}} {m_{00} }, \frac{m_{01}} {m_{00}} \right)
 $$
-A vector from corner's center $O$ to the centroid $C$ is $\overrightarrow{OC}$. 
+A vector from the center of the corner $O$ to the centroid $C$ is $\overrightarrow{OC}$. 
 The orientation of the patch can be calculated:
 $$
 \theta = \arctan(\frac{m_{01}}{m_{10}})
@@ -273,34 +273,31 @@ Then the rotation invariant feature is obtained.
 %----------------------------------------------------------------------------------------
 
 \subsection{RANSAC}
-\paragraph{Introduction}
+\paragraph{Overview}
+Random Sample Consensus (RANSAC) is a algorithm used to estimate the parameters of a mathematical model from a given data set.
+Usually the data set contains many outliers, which causes a lot of noise when a least square method are used to fit the parameter.
+RANSAC can solve this outlier problem.
+In computer vision field, to match features in different picture, a affine matrix is needed to be calculated.
+This matrix is fitted based on the feature data, which always contains many noises.
+Using RANSAC can help us get rid of these noises.
 
-%----------------------------------------------------------------------------------------
-%   k-d tree
-%----------------------------------------------------------------------------------------
-
-\subsection{k-d tree}
-\paragraph{Introduction}
-
-%----------------------------------------------------------------------------------------
-%   hashing
-%----------------------------------------------------------------------------------------
-\subsection{hashing}
-\paragraph{Introduction}
-
-%----------------------------------------------------------------------------------------
-%   hashing
-%----------------------------------------------------------------------------------------
-\subsection{hashing}
-\paragraph{Introduction}
-
+\paragraph{Details}
+Here are several steps to be followed when performing this algorithm. 
+Firstly, a sample subset, which contains minimal data items (smallest sufficient to determine the affine matrix), is selected from the original feature set.
+A affine matrix is then calculated using only the features from this subset.
+After this, the algorithm will check which features of the entire feature set are consistent with the current model.
+A feature will be considered as a inlier if it fits the model.
+If there are enough inliers, then the model can be considered acceptable.
+After getting a acceptable model, the model will be recalculated based on the whole inlier set.
+Error rates are used to estimate the model, lower error rates the model is, the better.
+After several iterations, a lowest acceptable model will be identified, which will be selected as the final model.
 
 %----------------------------------------------------------------------------------------
 %	Result
 %----------------------------------------------------------------------------------------
-\section{Test Result}
+\section{Experiment Result}
 
-\paragraph{Test System}
+\paragraph{Experiment System}
 A web system developed with boost asio and OpenCV helps to perform this test. 
 This system receives image inputs and parameters from the browser, processes them on the server and then pushes the result back.
 The website for the first assignment looks like figure \ref{fig:website}.
@@ -319,6 +316,8 @@ The keypoint extraction and matching with different algorithm is performed, resu
 %------------------------------------------------
 % object
 %------------------------------------------------
+\subsubsection{Object Feature Extraction}
+
 
 \begin{figure}[htbp]
 \centering

@@ -10,7 +10,6 @@
 
 namespace cvasgmt
 {
-
 void echo(const server::StrParams &insp, const server::ImgParams &inip, server::StrParams &outsp, server::ImgParams &outip)
 {
     for (auto kv : inip)
