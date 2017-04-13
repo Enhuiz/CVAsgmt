@@ -25,7 +25,6 @@ function get_input_app(el, n) {
             onFileChanged: function(e, cell) {
                 let files = e.target.files || e.dataTransfer.files;
                 if (files.length) {
-                    let image = new Image();
                     let reader = new FileReader();
                     let app = this;
 

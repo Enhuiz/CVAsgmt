@@ -9,6 +9,7 @@
 
 #include "server/server.hpp"
 #include "asgmt/asgmt1.hpp"
+#include "asgmt/asgmt2.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 
     // register asgmts
     server.route_proc("/asgmt/1/", cvasgmt::asgmt1);
+    server.route_proc("/asgmt/2/", cvasgmt::asgmt2);
 
     server.start();
 }

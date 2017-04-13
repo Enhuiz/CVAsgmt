@@ -34,7 +34,7 @@ class Server : public ServerBase
     void route_proc(const std::string &path,
                     std::function<void(const StrParams &, const ImgParams &, StrParams &, ImgParams &)> proc)
     {
-        route["^/*" +  utils::trim(path, '/') + "/*$"]["POST"] = [proc](std::shared_ptr<Response> response, std::shared_ptr<Request> request) {
+        route["^/*" + utils::trim(path, '/') + "/*$"]["POST"] = [proc](std::shared_ptr<Response> response, std::shared_ptr<Request> request) {
             StrParams insp;
             ImgParams inip;
             StrParams outsp;
@@ -51,7 +51,10 @@ class Server : public ServerBase
                     id.erase(0, id.find("#") + 1);
                     inip.insert(std::make_pair(id, cv::imdecode(cv::Mat(data), cv::IMREAD_COLOR)));
                 }
-                insp.insert(std::make_pair(kv.first, kv.second));
+                else
+                {
+                    insp.insert(std::make_pair(kv.first, kv.second));
+                }
             }
 
             try

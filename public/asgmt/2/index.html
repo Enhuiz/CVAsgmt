@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CV ASGMT 2</title>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app">
+        <input type="file" @change="onFileChanged" accept="image/*">
+        <canvas id="cvs"></canvas>
+    </div>
+</body>
+
+<script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
+<script>
+    function getCanvasPos(cvs, e) {
+        var rect = cvs.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left * (cvs.width / rect.width),
+            y: e.clientY - rect.top * (cvs.height / rect.height)
+        };
+    }
+
+    function post(url, obj, callback) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = callback;
+        xmlhttp.open("POST", url, true);
+        if ('headers' in obj) {
+            for (var k in obj['headers']) {
+                xmlhttp.setRequestHeader(k, obj['headers'][k]);
+            }
+        }
+
+        if ('body' in obj) {
+            xmlhttp.send(obj['body']);
+        } else {
+            xmlhttp.send();
+        }
+    }
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            img: null,
+            cvs: document.getElementById('cvs'),
+            points: [],
+        },
+        methods: {
+            onFileChanged: function(e) {
+                var files = e.target.files || e.dataTransfer.files;
+
+                if (files.length) {
+                    var vm = this;
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        vm.img = new Image();
+                        vm.img.onload = function() {
+                            cvs.setAttribute('width', vm.img.width);
+                            cvs.setAttribute('height', vm.img.height);
+                            var ctx = cvs.getContext('2d');
+                            ctx.drawImage(vm.img, 0, 0);
+                        };
+                        vm.img.src = e.target.result;
+                    }
+                    reader.readAsDataURL(files[0]);
+
+                    cvs.addEventListener("mousedown", function(e) {
+                        var pos = getCanvasPos(cvs, e);
+                        console.log(pos);
+
+                        vm.points.push(pos);
+
+                        var ctx = cvs.getContext('2d');
+
+                        var w = cvs.getAttribute('width');
+                        var h = cvs.getAttribute('height');
+                        var side = Math.min(w, h);
+
+                        ctx.beginPath();
+                        ctx.fillStyle = 'black';
+                        ctx.arc(pos.x, pos.y, side / 50, 0, Math.PI * 2, true);
+                        ctx.closePath();
+                        ctx.fill();
+
+                        ctx.beginPath();
+                        ctx.fillStyle = 'white';
+                        ctx.arc(pos.x, pos.y, side / 100, 0, Math.PI * 2, true);
+                        ctx.closePath();
+
+                        ctx.fill();
+
+                        if (vm.points.length >= 2) {
+                            var data = {
+                                "img#0": vm.img.src.split(',')[1],
+                                'x0': vm.points[0].x,
+                                'y0': vm.points[0].y,
+                                'x1': vm.points[1].x,
+                                'y1': vm.points[1].y,
+                            };
+
+                            post(window.location.href, {
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: Object.keys(data).map(function(key) {
+                                    return key + '=' + data[key];
+                                }).join('&')
+                            }, function(e) {
+                                if (e.target.readyState == 4) {
+                                    var data = JSON.parse(e.target.responseText);
+                                    for (var key in data) {
+                                        if (key.indexOf('img#') != -1) {
+                                            vm.img.src = "data:image/png;base64," + data[key];
+                                            vm.cvs.setAttribute('width', vm.img.width);
+                                            vm.cvs.setAttribute('height', vm.img.height);
+                                            var ctx = cvs.getContext('2d');
+                                            ctx.drawImage(vm.img, 0, 0);
+                                        }
+                                    }
+                                    vm.points = [];
+                                }
+                            });
+
+                            // fetch(window.location.href, {
+                            //     method: "POST",
+                            //     headers: {
+                            //         'Content-Type': 'application/x-www-form-urlencoded'
+                            //     },
+                            //     body: Object.keys(data).map(function(key) {
+                            //         return key + '=' + data[key];
+                            //     }).join('&'),
+                            // }).then(function(res) {
+                            //     return res.json();
+                            // }).then(function(data) {
+                            //     // apply them to the cells
+                            //     for (var key in data) {
+                            //         if (key.indexOf("img#") != -1) {
+                            //             self.cells.push({
+                            //                 id: key.split("img#").join(''),
+                            //                 img: "data:image/png;base64," + data[key]
+                            //             })
+                            //         } else {
+                            //             self.outsp.push({
+                            //                 k: key,
+                            //                 v: data[key]
+                            //             })
+                            //         }
+                            //     }
+                            // });
+                        }
+                    }, false);
+                }
+            }
+        }
+    });
+</script>
+
+</html>
