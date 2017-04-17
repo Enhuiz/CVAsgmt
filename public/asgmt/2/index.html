@@ -12,6 +12,13 @@
 <body>
     <div id="app">
         <input type="file" @change="onFileChanged" accept="image/*">
+        <input type="radio" id="internal" value="true" v-model="internal">
+        <label for="internal">Internal</label>
+        <input type="radio" id="external" value="" v-model="internal">
+        <label for="external">External</label>
+        <button class="btn btn-primary" @click=submit>Submit</button>
+        <br>
+        <br>
         <canvas id="cvs"></canvas>
     </div>
 </body>
@@ -48,7 +55,9 @@
         data: {
             img: null,
             cvs: document.getElementById('cvs'),
-            points: [],
+            internalPoints: [],
+            externalPoints: [],
+            internal: "true",
         },
         methods: {
             onFileChanged: function(e) {
@@ -69,12 +78,7 @@
                     }
                     reader.readAsDataURL(files[0]);
 
-                    cvs.addEventListener("mousedown", function(e) {
-                        var pos = getCanvasPos(cvs, e);
-                        console.log(pos);
-
-                        vm.points.push(pos);
-
+                    function drawPoint(pos) {
                         var ctx = cvs.getContext('2d');
 
                         var w = cvs.getAttribute('width');
@@ -82,80 +86,83 @@
                         var side = Math.min(w, h);
 
                         ctx.beginPath();
-                        ctx.fillStyle = 'black';
-                        ctx.arc(pos.x, pos.y, side / 50, 0, Math.PI * 2, true);
-                        ctx.closePath();
-                        ctx.fill();
-
-                        ctx.beginPath();
-                        ctx.fillStyle = 'white';
+                        if (vm.internal) {
+                            ctx.fillStyle = 'blue';
+                        } else {
+                            ctx.fillStyle = 'green';
+                        }
                         ctx.arc(pos.x, pos.y, side / 100, 0, Math.PI * 2, true);
                         ctx.closePath();
-
                         ctx.fill();
+                        // ctx.beginPath();
+                        // ctx.fillStyle = 'white';
+                        // ctx.arc(pos.x, pos.y, side / 100, 0, Math.PI * 2, true);
+                        // ctx.closePath();
+                        // ctx.fill();
+                    }
 
-                        if (vm.points.length >= 2) {
-                            var data = {
-                                "img#0": vm.img.src.split(',')[1],
-                                'x0': vm.points[0].x,
-                                'y0': vm.points[0].y,
-                                'x1': vm.points[1].x,
-                                'y1': vm.points[1].y,
-                            };
-
-                            post(window.location.href, {
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: Object.keys(data).map(function(key) {
-                                    return key + '=' + data[key];
-                                }).join('&')
-                            }, function(e) {
-                                if (e.target.readyState == 4) {
-                                    var data = JSON.parse(e.target.responseText);
-                                    for (var key in data) {
-                                        if (key.indexOf('img#') != -1) {
-                                            vm.img.src = "data:image/png;base64," + data[key];
-                                            vm.cvs.setAttribute('width', vm.img.width);
-                                            vm.cvs.setAttribute('height', vm.img.height);
-                                            var ctx = cvs.getContext('2d');
-                                            ctx.drawImage(vm.img, 0, 0);
-                                        }
-                                    }
-                                    vm.points = [];
-                                }
-                            });
-
-                            // fetch(window.location.href, {
-                            //     method: "POST",
-                            //     headers: {
-                            //         'Content-Type': 'application/x-www-form-urlencoded'
-                            //     },
-                            //     body: Object.keys(data).map(function(key) {
-                            //         return key + '=' + data[key];
-                            //     }).join('&'),
-                            // }).then(function(res) {
-                            //     return res.json();
-                            // }).then(function(data) {
-                            //     // apply them to the cells
-                            //     for (var key in data) {
-                            //         if (key.indexOf("img#") != -1) {
-                            //             self.cells.push({
-                            //                 id: key.split("img#").join(''),
-                            //                 img: "data:image/png;base64," + data[key]
-                            //             })
-                            //         } else {
-                            //             self.outsp.push({
-                            //                 k: key,
-                            //                 v: data[key]
-                            //             })
-                            //         }
-                            //     }
-                            // });
+                    function recordPoint(pos) {
+                        if (vm.internal) {
+                            vm.internalPoints.push(pos);
+                        } else {
+                            vm.externalPoints.push(pos);
                         }
-                    }, false);
+                    }
+
+                    cvs.addEventListener("mousemove", function(e) {
+                        if (e.buttons > 0) {
+                            var pos = getCanvasPos(cvs, e);
+                            drawPoint(pos);
+                            recordPoint(pos);
+                        }
+                    });
+
+                    cvs.addEventListener("touchmove", function(e) {
+                        e.preventDefault();
+                        var pos = getCanvasPos(cvs, e.touches[0]);
+                        drawPoint(pos);
+                        recordPoint(pos);
+                    });
                 }
-            }
+            },
+            submit: function() {
+                var vm = this;
+
+                var data = {
+                    "img#0": vm.img.src.split(',')[1],
+                };
+
+                for (var i = 0; i < vm.internalPoints.length; ++i) {
+                    data['in#' + i] = vm.internalPoints[i].x + '$' + vm.internalPoints[i].y;
+                }
+
+                for (var i = 0; i < vm.externalPoints.length; ++i) {
+                    data['ex#' + i] = vm.externalPoints[i].x + '$' + vm.externalPoints[i].y;
+                }
+
+                post(window.location.href, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: Object.keys(data).map(function(key) {
+                        return key + '=' + data[key];
+                    }).join('&')
+                }, function(e) {
+                    if (e.target.readyState == 4) {
+                        var data = JSON.parse(e.target.responseText);
+                        for (var key in data) {
+                            if (key.indexOf('img#') != -1) {
+                                vm.img.src = "data:image/png;base64," + data[key];
+                                vm.cvs.setAttribute('width', vm.img.width);
+                                vm.cvs.setAttribute('height', vm.img.height);
+                                var ctx = cvs.getContext('2d');
+                                ctx.drawImage(vm.img, 0, 0);
+                            }
+                        }
+                        vm.points = [];
+                    }
+                })
+            },
         }
     });
 </script>

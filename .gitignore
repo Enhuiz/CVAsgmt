@@ -6,3 +6,5 @@
 /tex/*/*.pdf
 *.png
 *.jpg
+/.vscode/
+/py/
