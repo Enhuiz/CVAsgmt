@@ -1,0 +1,130 @@
+\section{Classifier: Support Vector Machine}
+\subsection{Overview} 
+Support Vector Machine (SVM) is a popular classifier proposed first in 1963. 
+It was only capable of the linear classification problem until 1992, a kernel trick was invented to deal with the nonlinear classification. 
+In the following sections, we will first show how the linear classification works and then dive into the kernel trick.
+
+\subsection{Linear Classification}
+Suppose we have the linear separable data (fig \ref{fig:svm:lsd}). 
+\begin{figure}[H]
+\centering
+\input{fig/svm1}
+\caption{The linear separable data}
+\label{fig:svm:lsd}
+\end{figure}
+
+We want to choose a separation so that the margin between two groups can be maximized (fig \ref{fig::svm:mg}). 
+
+\begin{figure}[H]
+\centering
+\input{fig/svm2}
+\caption{Maximized margin}
+\label{fig:svm:mg}
+\end{figure}
+
+To find the maximized margin, we should write the two line as linear equation. 
+We want to define the boundaries of margin (i.e. the red lines) symmetrically. A way to do this is:
+\begin{align}
+\begin{split}
+\mathbf{w}^T \mathbf{x} + b = \gamma \\
+\mathbf{w}^T \mathbf{x} + b = -\gamma
+\end{split}
+\end{align}
+
+The $\gamma$s are so cumbersome. 
+As the $w$ and $b$ is arbitrary, we can just substitute $w$ with $\frac{w}{\gamma}$ and $b$ with $\frac{b}{\gamma}$, 
+then we get:
+
+\begin{align}
+\begin{split}
+\mathbf{w}^T \mathbf{x} + b = 1 \\
+\mathbf{w}^T \mathbf{x} + b = -1
+\end{split}
+\end{align}
+
+Now we have two boundaries. We can easily calculate the distance between them:
+
+\begin{equation}
+\mathrm{distance} = \frac{2}{||\mathbf{w}||}
+\end{equation}
+
+Our target is to maximized this distance in the premise that no sample is located in the margin, which means:
+
+\begin{align}
+\begin{split}
+& \max_{\mathbf{w},\mathbf{b}} \ \frac{2}{||\mathbf{w}||} \\ 
+s.t. \quad & \mathbf{w}^T \mathbf{x}_+ + b \geq 1, \forall \mathbf{x}_+ \in P\\
+ & \mathbf{w}^T \mathbf{x}_- + b \leq -1 , \forall \mathbf{x}_- \in N
+\end{split}
+\label{eq:svm:t1}
+\end{align}
+Where $P$ is the set of all positive samples and $N$ is the set of all negative samples.
+For mathematical convenience, we define $y$:
+
+\begin{equation}
+y_i = 
+\begin{cases}  
++1,& \mathbf{x}_i \text{ is } \mathbf{x}_+\\
+-1,& \mathbf{x}_i \text{ is } \mathbf{x}_-
+\end{cases}
+\end{equation}
+
+And instead of trying to maximizing the $\frac{2}{||\mathbf{w}||} $, we minimize $\frac{||\mathbf{w}||^2}{2}$. 
+The transforms above are carefully designed to make the later calculations easier. 
+Now we can rewrite equation \ref{eq:svm:t1} in a simpler way:
+
+\begin{align}
+\begin{split}
+& \min_{\mathbf{w},\mathbf{b}} \ \frac{||\mathbf{w}||^2}{2} \\ 
+s.t. \quad & y_i(\mathbf{w}^T \mathbf{x}_i + b) \geq 1, \forall \mathbf{x}_i \in P \cup N \\ 
+\end{split}
+\end{align}
+
+This is a convex optimal problem with inequality constraints, which can be solved by solving its Lagrange dual problem 
+(Sadly, the Lagrange dual problem was not taught in the mathematical course of SSE, SCUT).
+The dual problem can be represented as below:
+
+\begin{align}
+\begin{split}
+L_D(\mathbf{\lambda}) = \inf_{\mathbf{w}, b} \ L_P(\mathbf{w}, b, \mathbf{\lambda}) =& \inf_{\mathbf{w}, b} \left( \frac{1}{2}||\mathbf{w}||^2 - \sum_i\lambda_i y_i(\mathbf{w}^T\mathbf{x}_i+b) + \sum_i\lambda_i \right)\\
+&\max_\mathbf{\lambda} \ L_D(\mathbf{\lambda}) \\
+\label{eq:svm:dl1}
+\end{split}
+\end{align}
+
+Then we fix the $\mathbf{w}$ and $b$ to calculate the infimum. 
+To do this, the partial derivative should be calculated and set to $0$:
+
+\begin{align}
+\begin{split}
+\frac{\partial{L_P}}{\partial{\mathbf{w}}} =& \mathbf{w} - \sum_i\lambda_iy_i\mathbf{x}_i = 0 \\
+\frac{\partial{L_P}}{\partial{b}} =& -\sum_i\lambda_iy_i = 0
+\end{split}
+\end{align}
+
+Substitute $\mathbf{w}$ in equation \ref{eq:svm:dl1}, we get:
+
+\begin{align}
+\begin{split}
+&\max_\mathbf{\lambda} \ L_D(\mathbf{\lambda}) = \sum_i\lambda_i - \frac{1}{2} \sum_i\sum_j\lambda_i\lambda_jy_iy_j\mathbf{x}_i^T\mathbf{x}_j\\
+ &s.t. \ \sum_i\lambda_iy_i = 0, \lambda_i \geq 0, \forall i
+\label{eq:svm:dl2}
+\end{split}
+\end{align}
+
+Then we can calculate $\mathbf{\lambda}$ according to the samples, with which, the model will be capable to do the classification:
+
+\begin{align}
+\begin{split}
+\mathbf{w}^T \mathbf{u} + b =  \left(\sum_i\lambda_iy_i\mathbf{x}_i^T\mathbf{u}\right) + b 
+\end{split}
+\end{align}
+
+
+
+% Then we calculate the derivative of equation \ref{eq:svm:dl2}:
+% \begin{align}
+% \begin{split}
+% \frac{\mathrm{d}{L_D}}{\mathrm{d}\lambda_i} = 1 - \frac{1}{2}\sum_{j}\lambda_jy_iy_jx_ix_j - \frac{1}{2}\lambda_iy_iy_j\mathbf{x}_i\mathbf{x}_j = 0
+% \end{split}
+% \end{align}

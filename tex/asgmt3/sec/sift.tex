@@ -1,0 +1,59 @@
+\section{Feature Extraction: SIFT\cite{asgmt1}}
+\subsection{Overview}
+Scale-invariant feature transform (SIFT) is an algorithm to detects local features in images, 
+which is both a keypoint detector and keypoint descriptor. 
+It is proposed by David Lowe in 1999, and was patented by University of British Columbia.
+The algorithm can be divided into four stages: 
+Scale-space extreme detection, keypoint localization, orientation assignment and keypoint descriptor. 
+
+\subsection{Scale-space Extreme Detection}
+An image is first down-sampled and convolved with Gaussian filter.
+$$
+L(x, y, \sigma) = G(x, y, \sigma) * I(x, y)
+$$
+where 
+$L$ is the blurred image, 
+$G$ is the Gaussian Blur operator, 
+$I$ is the original image, 
+$x, y$ is the pixel location, 
+$\sigma$ is the scale parameter, greater the value, greater the blur.
+By using performing Gaussian filter with different scale parameter several times on different down-sampled images, new imaged are generated.
+These images together with the original ones are then divided into different octaves according to the original down-sampled image.
+The difference of images in the same octave will be taken after this. The difference is called Difference of Gaussian (DoG). 
+Keypoints are then taken as the maxima or minima points of DoG $D(x, y, \sigma)$ that occur at different octave.
+$$
+D(x, y, \sigma) = L(x, y, k_i\sigma) - L(x, y, k_{i+1}\sigma)
+$$
+where $k_i$, $k_{i+1}$ is the scale parameter of convolved image $i$.
+
+\subsection{Keypoint Localization}
+The extreme points are usually too many, some of which are unstable.
+Keypoint localization need to be performed to reject points that have low contrast or are poorly localized along an edge.
+$$
+D(\mathbf{x}) = D + \frac{\partial D }{\partial x}\mathbf{x} + \frac{1}{2}\mathbf{x^T}\frac{\partial ^ 2 D}{\partial \mathbf{x}^2}\mathbf{x}
+$$
+where $\mathbf{x} = (x, y, \sigma)^T$.
+Minima or maxima point is located at 
+$$
+\hat{\mathbf{x}} = -\frac{\partial ^ 2 D^{-1}}{\partial \mathbf{x}^2}\frac{\partial D }{\partial \mathbf{x}}
+$$
+value of $D(\mathbf{x})$ must be large, $|D(\mathbf{x})| > threshold$.
+
+\subsection{Orientation Assignment}
+To generate a keypoint descriptor, each keypoint should be assigned a consistent orientation based on local image gradient directions. 
+That will make the descriptor invariant to image rotation.
+To perform all the computation in a scale-invariant manner, the scale $\sigma$ should be removed first from $L(x, y, \sigma)$.
+Then the gradient magnitude $m(x, y)$ and $\theta(x, y)$ are computed as following:
+$$
+m(x, y) = \sqrt{(L(x+1, y) - L(x-1, y))^2 + (L(x, y+1) - L(x, y-1))^2}
+$$
+$$
+\theta(x, y) = \arctan \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x- 1,y)}
+$$
+
+\subsubsection{Keypoint descriptor}
+After the identification of keypoint and orientations assigned to them, a descriptor vector is ready to be calculated. 
+A $16 \times 16$ window is set around the keypoint, which is then broken into sixteen $4 \times 4$ windows. 
+In each $4 \times 4$ window, gradient magnitude and orientation are calculated. 360 degrees are divided into 8 bins, and each bin takes 45 degrees.
+Results are put into the 8 bins, which form an 8-bin histogram.
+There are sixteen $ 4 \times 4 $ sub-windows in the $16 \times 16$ window, which means, after calculation, a $16 \times 8$ dimensional vector will be generated as the feature vector.
