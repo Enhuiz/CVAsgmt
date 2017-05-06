@@ -121,11 +121,24 @@ $\mathbf{\lambda}$ can be calculated based on the algorithm called \textbf{seque
 \end{align}
 
 \section{Non-linear Classification}
-For data inseparable, a kernel function to map the data to a higher dimension may solve this problem.
+For data inseparable, a \textbf{kernel function} to map the data to a higher dimension solves this problem. 
+To do this, we rewrite the term $ \mathbf{x}_i^T\mathbf{x}_j $in equation \ref{eq:svm:dl2} to $K(\mathbf{x}_i^T, \mathbf{x}_j )$:
 
-% Then we calculate the derivative of equation \ref{eq:svm:dl2}:
-% \begin{align}
-% \begin{split}
-% \frac{\mathrm{d}{L_D}}{\mathrm{d}\lambda_i} = 1 - \frac{1}{2}\sum_{j}\lambda_jy_iy_jx_ix_j - \frac{1}{2}\lambda_iy_iy_j\mathbf{x}_i\mathbf{x}_j = 0
-% \end{split}
-% \end{align}
+\begin{align}
+\begin{split}
+&\max_\mathbf{\lambda} \ L_D(\mathbf{\lambda}) = \sum_i\lambda_i - \frac{1}{2} \sum_i\sum_j\lambda_i\lambda_jy_iy_j K(\mathbf{x}_i^T, \mathbf{x}_j )\\
+ &s.t. \ \sum_i\lambda_iy_i = 0, \lambda_i \geq 0, \forall i
+\label{eq:svm:dl3}
+\end{split}
+\end{align}
+
+where K is the kernel function, which first casts the samples, i.e. $\mathbf{x}_i $ and $ \mathbf{x}_j$, into higher dimension then calculate their dot product.
+There are several common kernel functions such as polynomial kernel function: 
+$$K(\mathbf{x}, \mathbf{y}) = (\mathbf{x}^T\mathbf{y} + 1) ^ p$$
+radial basis function:
+$$K(\mathbf{x}, \mathbf{y}) = e ^\frac{- ||\mathbf{x} -\mathbf{y}||^2}{2\sigma^2}$$
+sigmoid function:
+$$K(\mathbf{x}, \mathbf{y}) = \tanh(\kappa \mathbf{x}^T\mathbf{y} - \delta)$$
+
+So far we get the kernel function, it helps us deal with the non-linear separable binary classification.
+Image classification problem is generally non-linear separable problem, a kernel must be used when classify them.
