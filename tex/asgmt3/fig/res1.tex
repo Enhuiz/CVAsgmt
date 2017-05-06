@@ -1,0 +1,24 @@
+\begin{tikzpicture}[font=\small]
+\begin{axis}[
+    ybar,
+    bar width=15pt,
+    ylabel={Accuracy},
+    ymin=0,
+    ymax =1.1,
+    xtick=data,
+    axis x line=bottom,
+    axis y line=left,
+    enlarge x limits=0.2,
+    symbolic x coords={anchor,butterfly,chair,cup,motorbikes},
+    xticklabel style={anchor=base,yshift=-\baselineskip},
+    nodes near coords={\pgfmathprintnumber\pgfplotspointmeta}
+]
+    \addplot[fill=white] coordinates {
+    (anchor,        1.0)
+    (butterfly,     0.8)
+    (chair,         0.8)
+    (cup,           0.9)
+    (motorbikes,    1.0)
+    };
+\end{axis}
+\end{tikzpicture}

@@ -1,43 +1,96 @@
 \section{Introduction}
 Nowadays, image classification has become a very hot topic. 
 It refers to the task of categorizing a digital image into given classes. 
-To do this, a general workflow is needed.
-First, a dataset that contains the image data is needed, in which images should be labeled by their classes. 
-The data set will then be divided into two major parts, the training set, and the test set.
-The features of images from both training set and test set should be extracted before the classification.
-This process is called feature extraction.
-Feature extraction helps to reduce the calculations of the classifier and improve the accuracy, 
-by means of generating lower dimension descriptions of images.
-After feature extraction, the feature can be used as the input to the classifier to train and test the model.
-The training set is used to train the classifier in the process showed in fig \ref{fig:proc:train}, 
+To do this, a general workflow should be followed.
+First, a dataset that contains the image data is required, in which images should be labeled by their classes. 
+Then the data set will be divided into two sets, the training set, and the test set.
+Next, the features of images from both training set and test set will be extracted by SIFT.
+After this, feature will be clustered using the k-means algorithm.
+Steps above help to reduce the amount of calculation of the classifier and improve the accuracy of it by generating lower dimension descriptions of images.
+Finally, a vector which describe a pictures will be achieved and it will be input into the classifier (SVM) to train or test the model.
+Following graphs show the process of training and test respectively.
+
 \begin{figure}[H]
+\begin{minipage}[t]{0.5\linewidth}
   \centering
-  \begin{tikzpicture}[node distance=2cm, scale=0.5]
-  \node[process](ts){Training Set};
+  \begin{tikzpicture}[node distance=2cm, every node/.style={scale=0.75}]
+  \node[io](ts){Input (training set)};
   \node[process, below left of=ts, yshift=-1cm, xshift=-1cm](fe){Feature Extraction (SIFT)};
-  \node[process, below right of=ts, yshift=-3cm](tc){Train Classifier (SVM)};
+  \node[process, below of=fe](fc){Feature Clustering(k-means)};
+  \node[process, below right of=ts, yshift=-2cm, xshift=2cm](ec){Encode};
+  \node[process, below right of=ts, yshift=-6cm](tc){Train Classifier (SVM)};
+
   \draw[arrow](ts) to node{images} (fe);
-  \draw[arrow](fe) to node {features} (tc);
-  \draw[arrow](ts) to node {labels} (tc);
+  \draw[arrow](fe) to node {features} (fc);
+  \draw[arrow](fc) to node {input vectors} (tc);
+  \draw[arrow](ts) to node {labels} (ec);
+  \draw[arrow](ec) to node {label vectors} (tc);
   \end{tikzpicture}
   \caption{Training Process}
   \label{fig:proc:train}
-\end{figure}
-which will then be evaluated by the test set in the process showed in fig \ref{fig:proc:test}.
 
-\begin{figure}[H]
-\centering
-  \begin{tikzpicture}[node distance=2cm]
-  \node[process](ts){Test Set};
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \begin{tikzpicture}[node distance=2cm, every node/.style={scale=0.75}]
+  \node[io](ts){Input (test set)};
   \node[process, below of=ts](fe){Feature Extraction (SIFT)};
-  \node[process, below of=fe](tc){Prediction (Trained SVM)};
+  \node[process, below of=fe](fc){Feature Clustering (k-means)};
+  \node[process, below of=fc](tc){Prediction (trained SVM)};
+  \node[process, below of=tc](dc){Decode};
+  \node[io, below of=dc](res){Output (result)};
+
   \draw[arrow](ts) to node{images} (fe);
-  \draw[arrow](fe) to node {features} (tc);
+  \draw[arrow](fe) to node {features} (fc);
+  \draw[arrow](fc) to node {input vectors} (tc);
+  \draw[arrow](tc) to node {label vectors} (dc);
+  \draw[arrow](dc) to node {labels} (res);
   \end{tikzpicture}
   \caption{Test Process}
   \label{fig:proc:test} %% label for second subfigure
+
+\end{minipage}
 \end{figure}
 
-In this assignment, we use scale-invariant feature transform (SIFT) as the feature extraction method and support vector machine (SVM) as the classifier.
+% \begin{figure}[H]
+%   \centering
+%   \begin{tikzpicture}[node distance=2cm, every node/.style={scale=0.5}]
+%   \node[io](ts){Input (training set)};
+%   \node[process, below left of=ts, yshift=-1cm, xshift=-1cm](fe){Feature Extraction (SIFT)};
+%   \node[process, below of=fe](fc){Feature Clustering(k-means)};
+%   \node[process, below right of=ts, yshift=-2cm, xshift=2cm](ec){Encode};
+%   \node[process, below right of=ts, yshift=-6cm](tc){Train Classifier (SVM)};
+
+%   \draw[arrow](ts) to node{images} (fe);
+%   \draw[arrow](fe) to node {features} (fc);
+%   \draw[arrow](fc) to node {input vectors} (tc);
+%   \draw[arrow](ts) to node {labels} (ec);
+%   \draw[arrow](ec) to node {label vectors} (tc);
+%   \end{tikzpicture}
+%   \caption{Training Process}
+%   \label{fig:proc:train}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+%   \begin{tikzpicture}[node distance=2cm, every node/.style={scale=0.5}]
+%   \node[io](ts){Input (test set)};
+%   \node[process, below of=ts](fe){Feature Extraction (SIFT)};
+%   \node[process, below of=fe](fc){Feature Clustering (k-means)};
+%   \node[process, below of=fc](tc){Prediction (trained SVM)};
+%   \node[process, below of=tc](dc){Decode};
+%   \node[io, below of=dc](res){Output (result)};
+
+%   \draw[arrow](ts) to node{images} (fe);
+%   \draw[arrow](fe) to node {features} (fc);
+%   \draw[arrow](fc) to node {input vectors} (tc);
+%   \draw[arrow](tc) to node {label vectors} (dc);
+%   \draw[arrow](dc) to node {labels} (res);
+%   \end{tikzpicture}
+%   \caption{Test Process}
+%   \label{fig:proc:test} %% label for second subfigure
+% \end{figure}
+
+
 
 

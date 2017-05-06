@@ -75,6 +75,14 @@
 % arrow
 \tikzstyle{arrow} = [->,>=stealth]
 
+% histogram
+\pgfplotsset{
+  compat=newest,
+  xlabel near ticks,
+  ylabel near ticks
+}
+
+
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -101,80 +109,26 @@
 %	PROBLEM 1
 %----------------------------------------------------------------------------------------
 
-\input{sec/abs}
+\input{sec/abstract}
 
-\input{sec/intro}
+\input{sec/introduction}
 
 \input{sec/sift}
 
+\input{sec/kmeans}
+
 \input{sec/svm}
 
-\input{sec/ds}
+\input{sec/dataset}
 
+\input{sec/result}
 
-% %-----------------------------
-
-% \begin{align} 
-% \begin{split}
-% (x+y)^3 	&= (x+y)^2(x+y)\\
-% &=(x^2+2xy+y^2)(x+y)\\
-% &=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-% &=x^3+3x^2y+3xy^2+y^3
-% \end{split}					
-% \end{align}
-
-% %------------------------------------------------
-
-\subsection{Heading on level 2 (subsection)}
-
-
-\begin{align}
-A = 
-\begin{bmatrix}
-A_{11} & A_{21} \\
-A_{21} & A_{22}
-\end{bmatrix}
-\end{align}
-
-
-%------------------------------------------------
-
-\subsubsection{Heading on level 3 (subsubsection)}
-
-
-\paragraph{Heading on level 4 (paragraph)}
 
 
 %----------------------------------------------------------------------------------------
-%	PROBLEM 2
+%	REF
 %----------------------------------------------------------------------------------------
 
-\section{Lists}
-
-%------------------------------------------------
-
-\subsection{Example of list (3*itemize)}
-\begin{itemize}
-	\item First item in a list 
-		\begin{itemize}
-		\item First item in a list 
-			\begin{itemize}
-			\item First item in a list 
-			\item Second item in a list 
-			\end{itemize}
-		\item Second item in a list 
-		\end{itemize}
-	\item Second item in a list 
-\end{itemize}
-
-%------------------------------------------------
-
-\subsection{Example of list (enumerate)}
-\begin{enumerate}
-\item First item in a list 
-\item Second item in a list 
-\item Third item in a list
-\end{enumerate}
 
 %----------------------------------------------------------------------------------------
 
@@ -183,6 +137,16 @@ A_{21} & A_{22}
 \begin{thebibliography}{99}
 \bibitem{asgmt1}
 Niu Zhe, Computer Vision Assignment \#1.
+
+\bibitem{kmeans}
+Wikipedia, k-means clustering.
+
+\bibitem{kmeans}
+Wikipedia, support vector machine.
+
+\bibitem{svm}
+Patrick Henry Winston, MIT 6.034 Artificial Intelligence, Fall 2010, Lecture 16: Learning: Support Vector Machines.
+
 % \bibitem{orb}
 % Rublee E, Rabaud V, Konolige K, et al. ORB: An efficient alternative to SIFT or SURF[C]// IEEE International Conference on Computer Vision. IEEE, 2011:2564-2571.
 \end{thebibliography}

@@ -1,0 +1,40 @@
+\section{Feature Clustering: k-means}
+
+\subsection{Overview}
+
+\textbf{K-means} is a clustering method widely used in the unsupervised learning problem.
+It clusters samples into a given number of classes so that each sample has a minimal distance to the center of the group it belongs.
+In this assignment, we use it to convert our descriptors of key points of a picture to some highly abstracted features,
+which then can be used as input of classifiers.
+We call this process \textbf{feature clustering}.
+
+\subsection{Lloyd's algorithm}
+\textbf{Lloyd's algorithm} is a popular iterative technique used to calculate the clustering result of k-means. 
+The main idea of the algorithm is to keep finding centers of new groups.
+After finding new centers, all points in the space should be reassigned to the nearest new group based on the distance to its center.
+As the member of the group changed by the reassignment, new center is generated.
+The algorithm will keep running until the new centers and the old centers are approximately same.
+The steps of this algorithm can be represented as following. Firstly, the \textbf{assignment step}:
+
+$$
+G_i^{(t)} = \left\{ x | D(x, c_i^{(t)}) \leq D(x, c_j^{(t)}) \ \forall j, 1 \leq j \leq K \right\}
+$$
+
+where $G_i^{(t)}$ is the group $i$ at time $t$, 
+$D$ is the distance function (which can be Euclidean distance, Mahalanobis distance,  Hamming distance etc.),
+$c_i$ is the center of group $i$ at time $t$, 
+$K$ is the maximum number of clusters, which is set manually before the clustering,
+and $x$ is the samples.The second step is called \textbf{update step}: 
+$$
+c_i^{(t+1)} = \frac{1}{|G_i^{(t)}|} \sum_{x_j \in G_i^{(t)}} x_j
+$$
+By repeating the two steps above until the centers of groups nearly stop changing, we will finally get a converged clustered model.
+
+\subsection{Cluster Training and Feature Clustering}
+We use the features extracted from all training images by SIFT to train our k-means cluster. 
+The trained cluster will then be used to generate an input vector of the classifier SVM.
+Specifically, when the features extracted from the key points in one single image is send to the cluster. 
+The cluster will tell which classes do the key points belong to.
+So the images, from both the training set and the test set, can be represented by the classes' information in the cluster rather than the raw SIFT features.
+This helps to combine all key points in one single vector.
+And we finally get normalized vectors of corresponding images, which will be used in following training and testing of the classifier.

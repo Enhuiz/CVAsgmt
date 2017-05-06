@@ -120,7 +120,7 @@ $\mathbf{\lambda}$ can be calculated based on the algorithm called \textbf{seque
 \end{split}
 \end{align}
 
-\section{Non-linear Classification}
+\subsection{Non-linear Classification}
 For data inseparable, a \textbf{kernel function} to map the data to a higher dimension solves this problem. 
 To do this, we rewrite the term $ \mathbf{x}_i^T\mathbf{x}_j $in equation \ref{eq:svm:dl2} to $K(\mathbf{x}_i^T, \mathbf{x}_j )$:
 
@@ -133,12 +133,12 @@ To do this, we rewrite the term $ \mathbf{x}_i^T\mathbf{x}_j $in equation \ref{e
 \end{align}
 
 where K is the kernel function, which first casts the samples, i.e. $\mathbf{x}_i $ and $ \mathbf{x}_j$, into higher dimension then calculate their dot product.
-There are several common kernel functions such as polynomial kernel function: 
+There are several common kernel functions such as \textbf{polynomial kernel function}: 
 $$K(\mathbf{x}, \mathbf{y}) = (\mathbf{x}^T\mathbf{y} + 1) ^ p$$
-radial basis function:
+\textbf{radial basis function(RBF)}:
 $$K(\mathbf{x}, \mathbf{y}) = e ^\frac{- ||\mathbf{x} -\mathbf{y}||^2}{2\sigma^2}$$
-sigmoid function:
+\textbf{sigmoid function}:
 $$K(\mathbf{x}, \mathbf{y}) = \tanh(\kappa \mathbf{x}^T\mathbf{y} - \delta)$$
 
-So far we get the kernel function, it helps us deal with the non-linear separable binary classification.
-Image classification problem is generally non-linear separable problem, a kernel must be used when classify them.
+So far we have got the kernel function. It helps us deal with the non-linear separable binary classification.
+Image classification problem is generally non-linear separable problem, a kernel must be used when classifying them.
