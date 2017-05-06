@@ -1,6 +1,6 @@
 \section{Classifier: Support Vector Machine}
 \subsection{Overview} 
-Support Vector Machine (SVM) is a popular classifier proposed first in 1963. 
+\textbf{Support Vector Machine (SVM)} is a popular classifier proposed first in 1963. 
 It was only capable of the linear classification problem until 1992, a kernel trick was invented to deal with the nonlinear classification. 
 In the following sections, we will first show how the linear classification works and then dive into the kernel trick.
 
@@ -112,7 +112,7 @@ Substitute $\mathbf{w}$ in equation \ref{eq:svm:dl1}, we get:
 \end{split}
 \end{align}
 
-Then we can calculate $\mathbf{\lambda}$ according to the samples, with which, the model will be capable to do the classification:
+$\mathbf{\lambda}$ can be calculated based on the algorithm called \textbf{sequential minimal optimization algorithm}. After training, the model can be used to do linear binary classification:
 
 \begin{align}
 \begin{split}
@@ -120,7 +120,8 @@ Then we can calculate $\mathbf{\lambda}$ according to the samples, with which, t
 \end{split}
 \end{align}
 
-
+\section{Non-linear Classification}
+For data inseparable, a kernel function to map the data to a higher dimension may solve this problem.
 
 % Then we calculate the derivative of equation \ref{eq:svm:dl2}:
 % \begin{align}
